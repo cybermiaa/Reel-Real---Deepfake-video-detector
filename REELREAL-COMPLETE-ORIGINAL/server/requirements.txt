@@ -1,0 +1,16 @@
+# Middle-layer server only. The detection pipeline has its own requirements.txt
+# in ctf_pretrained/ — install that one too, in the same environment.
+#
+#   pip install -r requirements.txt
+#   pip install -r <path-to>/ctf_pretrained/requirements.txt
+#
+# NOTE: ctf_pretrained/requirements.txt is missing `transformers`, which
+# infer_pipeline.py imports (ViTForImageClassification). It is pinned here so
+# the pipeline actually runs.
+
+fastapi==0.115.0
+uvicorn[standard]==0.30.6
+python-multipart==0.0.9
+
+# Imported by infer_pipeline.py but absent from the pipeline's own requirements.
+transformers==4.44.2

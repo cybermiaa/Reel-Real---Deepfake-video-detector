@@ -1,0 +1,200 @@
+/* ============================================================================
+   REEL/REAL — SHARED STYLE LAYER
+   ----------------------------------------------------------------------------
+   This file is the single source of visual truth for BOTH surfaces:
+     site/css/tokens.css        <-- you are here (the master copy)
+     extension/css/tokens.css   <-- byte-identical duplicate
+
+   Chrome extensions cannot reach outside their own folder, so the extension
+   needs its own physical copy. Edit THIS file, then copy it across. Everything
+   below is surface-agnostic: design tokens plus the handful of primitives that
+   genuinely look the same in a 1320px page and a 380px popup.
+
+   Anything that is layout-specific lives in site/css/site.css or
+   extension/css/popup.css instead.
+   ========================================================================== */
+
+:root {
+  /* ---- Palette ---- */
+  --bg-cream: #F5F3EE;
+  --bg-pink: #E8C5D8;
+  --forest-green: #144D37;
+  --forest-dark: #0A3223;
+  --accent-orange: #EF6337;
+  --accent-blue: #3A82C4;
+  --text-dark: #144D37;
+  --text-muted: #2A6B50;
+
+  --white: #ffffff;
+  --white-trans: rgba(255, 255, 255, 0.72);
+  --white-glass: rgba(255, 255, 255, 0.65);
+  --green-glass: rgba(20, 77, 55, 0.05);
+  --border-color: rgba(20, 77, 55, 0.15);
+
+  /* ---- Verdict semantics ----
+     These three names are the contract between the CSS and the detector's
+     `severity` / timeline `label` values. Do not rename without updating
+     js/detector.js. */
+  --fake: #EF6337;   /* severity: bad  / label: synthetic */
+  --warn: #D97706;   /* severity: warn / label: uncertain */
+  --true: #144D37;   /* severity: ok   / label: authentic */
+
+  /* ---- Type families ----
+     Tokenised so the extension can swap in local fallbacks without the
+     component CSS knowing anything about it. */
+  --font-sans: "Plus Jakarta Sans", system-ui, -apple-system, "Segoe UI", sans-serif;
+  --font-display: "Squada One", "Arial Narrow", Impact, sans-serif;
+  --font-serif: "Instrument Serif", Georgia, "Times New Roman", serif;
+
+  /* ---- Fluid type scale ----
+     clamp() means the site scales with the viewport. The popup has a fixed
+     380px viewport, so it lands near the bottom of every clamp automatically. */
+  --step--1: clamp(.72rem, .68rem + .2vw, .82rem);
+  --step-0: clamp(.9rem, .85rem + .25vw, 1.02rem);
+  --step-1: clamp(1.1rem, 1rem + .45vw, 1.3rem);
+  --step-2: clamp(1.6rem, 1.4rem + 1vw, 2.2rem);
+  --step-3: clamp(2.4rem, 1.8rem + 3vw, 4.2rem);
+
+  --gutter: clamp(20px, 5vw, 80px);
+  --maxw: 1320px;
+  --radius: 24px;
+  --radius-sm: 14px;
+}
+
+/* ---- Reset / base ---- */
+* { box-sizing: border-box; }
+html { scroll-behavior: smooth; }
+
+@media (prefers-reduced-motion: reduce) {
+  html { scroll-behavior: auto; }
+  * { animation: none !important; transition: none !important; }
+}
+
+a { color: inherit; text-decoration: none; }
+:focus-visible { outline: 2px solid var(--forest-green); outline-offset: 3px; }
+
+/* Visually hidden but still announced by screen readers. Used for the real
+   <input type="file">, which we hide behind a styled button. */
+.sr {
+  position: absolute; width: 1px; height: 1px;
+  overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap;
+}
+
+.serif { font-family: var(--font-serif); font-style: italic; }
+.sans-bold { font-family: var(--font-display); text-transform: uppercase; letter-spacing: .05em; }
+
+/* ============================================================================
+   SHARED PRIMITIVES — identical on both surfaces
+   ========================================================================== */
+
+/* Frosted card. backdrop-filter needs something behind it to blur, so this
+   only reads as "glass" over the cream/pink page backgrounds. */
+.glass-panel {
+  background: var(--white-glass);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+  border: 1px solid var(--border-color);
+  border-radius: var(--radius);
+  box-shadow: 0 12px 40px rgba(20, 77, 55, 0.05);
+}
+
+.btn {
+  display: inline-block;
+  padding: 14px 36px;
+  border: none;
+  border-radius: 50px;
+  background: var(--accent-orange);
+  color: var(--white);
+  font: inherit;
+  font-size: var(--step-0);
+  font-weight: 700;
+  cursor: pointer;
+  transition: all .2s ease;
+  text-transform: uppercase;
+  letter-spacing: 0.03em;
+  box-shadow: 0 6px 18px rgba(239, 99, 55, 0.25);
+}
+.btn:hover { background: #d85228; transform: translateY(-2px); box-shadow: 0 10px 22px rgba(239, 99, 55, 0.35); }
+.btn.ghost {
+  background: var(--white); color: var(--forest-green);
+  border: 1px solid var(--border-color); box-shadow: none; text-transform: none;
+}
+.btn.ghost:hover { background: var(--bg-cream); transform: translateY(-2px); }
+.btn[disabled] { opacity: .4; cursor: not-allowed; transform: none; }
+
+/* Verdict pill. Defaults to "synthetic"; .clean flips it to authentic. */
+.badge {
+  padding: 10px 20px;
+  font-size: var(--step--1);
+  font-weight: 700;
+  border-radius: 50px;
+  border: 1px solid var(--fake);
+  color: var(--fake);
+  background: rgba(239, 99, 55, 0.1);
+  white-space: nowrap;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+.badge.clean { border-color: var(--true); color: var(--true); background: rgba(20, 77, 55, 0.1); }
+
+/* Status dot */
+.dot { width: 8px; height: 8px; border-radius: 50%; display: inline-block; }
+.dot.f { background: var(--fake); box-shadow: 0 0 8px var(--fake); }
+.dot.t { background: var(--true); box-shadow: 0 0 8px var(--true); }
+
+/* Evidence row: label on the left, detector finding on the right.
+   The severity class comes straight off result.artifacts[].severity. */
+.ev {
+  display: flex; align-items: center; justify-content: space-between; gap: 16px;
+  padding: 12px 0; border-top: 1px solid var(--border-color);
+  font-size: var(--step--1);
+}
+.ev:first-of-type { border-top: 0; }
+.ev b { font-weight: 600; color: var(--forest-green); }
+.ev span { color: var(--text-muted); font-weight: 600; text-align: right; }
+.ev span.flag, .ev span.warn { color: var(--warn); }
+.ev span.bad { color: var(--fake); }
+.ev span.ok { color: var(--true); }
+/* "na" = the model does not measure this signal at all. Deliberately muted and
+   italic so an unmeasured row can never be mistaken at a glance for a finding. */
+.ev span.na { color: var(--text-muted); font-weight: 500; font-style: italic; opacity: .7; }
+
+/* Per-second timeline. Each <button> is one second of video; its height is the
+   synthetic score and its class is the verdict label for that second. */
+.bars { display: flex; align-items: flex-end; gap: 4px; height: 100px; }
+.bars button {
+  flex: 1; border: 0; padding: 0; background: var(--true);
+  cursor: pointer; border-radius: 4px; opacity: .85; transition: all .15s ease;
+}
+.bars button.w { background: var(--warn); }
+.bars button.f { background: var(--fake); }
+.bars button:hover { opacity: 1; transform: scaleY(1.08); }
+.bars button.now { opacity: 1; box-shadow: 0 0 0 2px var(--white) inset; }
+
+.axis {
+  display: flex; justify-content: space-between; margin-top: 12px;
+  font-size: var(--step--1); color: var(--text-muted); font-weight: 600;
+}
+.legend {
+  display: flex; flex-wrap: wrap; gap: 20px; margin-top: 20px;
+  font-size: var(--step--1); color: var(--text-muted); font-weight: 600;
+}
+.legend i { width: 10px; height: 10px; border-radius: 50%; display: inline-block; margin-right: 6px; }
+
+/* Determinate progress bar used during analysis on both surfaces. */
+.bar { height: 6px; background: rgba(20, 77, 55, 0.1); border-radius: 10px; overflow: hidden; display: none; }
+.bar.on { display: block; }
+.bar i { display: block; height: 100%; width: 0; background: var(--forest-green); transition: width .2s linear; }
+.bar-label { margin-top: 10px; font-size: var(--step--1); color: var(--forest-green); font-weight: 600; display: none; }
+.bar-label.on { display: block; }
+
+/* Dashed upload target. .over is toggled during dragenter/dragover. */
+.drop {
+  border: 2px dashed var(--forest-green);
+  background: var(--white-glass);
+  backdrop-filter: blur(12px);
+  border-radius: var(--radius);
+  text-align: center;
+  transition: all .2s ease;
+}
+.drop.over { border-color: var(--accent-orange); background: var(--white); }

@@ -1,0 +1,164 @@
+/* ============================================================================
+   REEL/REAL — POPUP LAYOUT
+   ----------------------------------------------------------------------------
+   Extension-only. Loaded after css/tokens.css, which is the same shared file
+   the website uses, so every colour and font here comes from one place.
+
+   Sizing note: a popup has no window to resize into. Chrome sizes it to the
+   document, capped at 800x600. We therefore pin an explicit 380x600 box and do
+   our own internal scrolling, rather than letting content dictate the size and
+   watching the popup jump around between screens.
+   ========================================================================== */
+
+html, body {
+  width: 380px;
+  height: 600px;
+  margin: 0;
+  overflow: hidden;              /* the middle section scrolls, not the page */
+}
+
+body {
+  background: var(--bg-cream);
+  color: var(--forest-green);
+  font-family: var(--font-sans);
+  font-size: 13px;
+  line-height: 1.5;
+  -webkit-font-smoothing: antialiased;
+  display: flex;
+  flex-direction: column;
+}
+
+/* Fluid clamps assume a wide viewport; at 380px they all bottom out, which is
+   what we want, but a couple of steps need pinning for a dense layout. */
+:root { --step--1: 11px; --step-0: 13px; }
+
+/* ---------- Header ---------- */
+.pop-head {
+  flex: 0 0 auto;
+  display: flex; align-items: center; justify-content: space-between;
+  padding: 14px 16px;
+  border-bottom: 1px solid var(--border-color);
+  background: rgba(245, 243, 238, 0.9);
+}
+.mark {
+  font-family: var(--font-display);
+  font-size: 20px; letter-spacing: 0.04em;
+  text-transform: uppercase; color: var(--forest-green);
+}
+.mark span { color: var(--accent-orange); }
+.tag {
+  font-size: 9px; font-weight: 700; letter-spacing: .1em; text-transform: uppercase;
+  padding: 4px 10px; border-radius: 50px;
+  background: rgba(20, 77, 55, 0.1); color: var(--forest-green);
+}
+
+/* ---------- Scrollable middle ---------- */
+.pop-body { flex: 1 1 auto; overflow-y: auto; padding: 16px; }
+.pop-body::-webkit-scrollbar { width: 6px; }
+.pop-body::-webkit-scrollbar-thumb { background: var(--border-color); border-radius: 10px; }
+
+/* Screens are mutually exclusive; popup.js toggles .on. */
+.screen { display: none; }
+.screen.on { display: block; }
+
+/* ---------- Screen 1: upload ---------- */
+.drop { padding: 28px 16px; }
+.drop h3 {
+  margin: 0 0 6px;
+  font-family: var(--font-display);
+  font-size: 22px; letter-spacing: 0.04em; text-transform: uppercase;
+  color: var(--forest-green);
+}
+.drop p { margin: 0 auto 16px; max-width: 30ch; color: var(--text-muted); font-size: 11px; }
+
+.btn-sm { padding: 9px 22px; font-size: 11px; box-shadow: 0 4px 12px rgba(239, 99, 55, 0.22); }
+.btn.full { width: 100%; }
+
+.samples { margin-top: 18px; display: flex; flex-direction: column; gap: 6px; }
+.samples-label {
+  font-size: 9px; font-weight: 700; letter-spacing: .1em;
+  text-transform: uppercase; color: var(--text-muted);
+}
+.chip {
+  padding: 8px 12px; border: 1px solid var(--border-color); background: var(--white);
+  color: var(--forest-green); border-radius: 10px;
+  font: inherit; font-size: 11px; font-weight: 600;
+  cursor: pointer; text-align: left; transition: all .2s ease;
+  overflow: hidden; text-overflow: ellipsis; white-space: nowrap;
+}
+.chip:hover { background: var(--forest-green); color: var(--white); }
+
+.checks {
+  margin: 18px 0 0; padding: 0; list-style: none;
+  display: flex; flex-wrap: wrap; gap: 6px 14px;
+  font-size: 10px; font-weight: 600; color: var(--text-muted);
+}
+.checks li::before { content: "✓ "; color: var(--true); }
+
+/* ---------- Screen 2: staged ---------- */
+.staged-card { padding: 18px; }
+.file-name {
+  font-size: 13px; font-weight: 700; color: var(--forest-green);
+  overflow-wrap: anywhere;
+}
+.file-meta { font-size: 11px; color: var(--text-muted); margin-top: 2px; }
+.staged-card .bar { margin-top: 16px; }
+.row-actions { display: flex; gap: 8px; margin-top: 16px; }
+.row-actions .btn { flex: 1; }
+
+/* ---------- Screen 3: result ---------- */
+.verdict-card { padding: 16px; text-align: center; }
+.verdict-card .badge { display: inline-block; margin-bottom: 10px; padding: 7px 16px; font-size: 10px; }
+
+.stat-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; margin-top: 12px; }
+.stat {
+  background: var(--white); border: 1px solid var(--border-color);
+  border-radius: var(--radius-sm); padding: 10px 8px; text-align: center;
+}
+.stat span {
+  display: block; font-size: 9px; font-weight: 700; letter-spacing: .06em;
+  text-transform: uppercase; color: var(--text-muted);
+}
+.stat strong {
+  display: block; margin-top: 2px;
+  font-family: var(--font-display); font-size: 20px;
+  color: var(--forest-green); letter-spacing: 0.03em;
+}
+
+.block { margin-top: 20px; }
+.block h4 {
+  margin: 0 0 10px;
+  font-family: var(--font-display); font-size: 14px;
+  letter-spacing: 0.04em; text-transform: uppercase; color: var(--forest-green);
+}
+
+/* Shorter than the site's 100px timeline, and non-interactive here: there is no
+   video element in the popup to seek, so the bars are read-only indicators. */
+.block .bars { height: 56px; gap: 2px; }
+.block .bars button { cursor: default; }
+.block .bars button:hover { transform: none; }
+.axis { font-size: 9px; margin-top: 8px; }
+.legend { gap: 10px; margin-top: 10px; font-size: 9px; }
+.legend i { width: 7px; height: 7px; margin-right: 4px; }
+
+.ev { padding: 9px 0; font-size: 11px; gap: 10px; }
+.ev b { flex: 0 0 42%; }
+
+.caveat {
+  margin: 16px 0 18px;
+  font-size: 10px; line-height: 1.6; color: var(--text-muted);
+}
+
+/* ---------- Footer ---------- */
+.pop-foot {
+  flex: 0 0 auto;
+  display: flex; align-items: center; justify-content: space-between; gap: 8px;
+  padding: 12px 16px;
+  border-top: 1px solid var(--border-color);
+  background: var(--white-trans);
+}
+.site-link {
+  font-size: 11px; font-weight: 700; color: var(--accent-blue);
+}
+.site-link:hover { text-decoration: underline; }
+.ver { font-size: 9px; color: var(--text-muted); font-weight: 600; }

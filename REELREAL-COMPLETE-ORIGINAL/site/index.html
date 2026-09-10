@@ -1,0 +1,271 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>REEL vs REAL — Deepfake Video Detection</title>
+
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=Squada+One&display=swap" rel="stylesheet">
+
+<!-- tokens.css must load first: site.css consumes its custom properties.
+     tokens.css is duplicated verbatim into extension/css/ so both surfaces
+     share one palette and type scale. -->
+<link rel="stylesheet" href="css/tokens.css">
+<link rel="stylesheet" href="css/site.css">
+
+<!-- Motion layer. Both files are purely additive and load last so they can
+     override nothing but animation. Deleting these two lines returns the site
+     to its static look with no other side effects. -->
+<link rel="stylesheet" href="css/animate.css">
+<link rel="stylesheet" href="css/enhance.css">
+</head>
+<body>
+
+<header class="mast">
+  <div class="wrap mast-in">
+    <a href="#" class="mark">REEL<span>/</span>REAL</a>
+    <nav>
+      <a href="#detect">Check a video</a>
+      <a href="#report">Report</a>
+      <a href="#method">Method</a>
+      <a href="#limits">Limits</a>
+      <a href="#detect" class="btn-nav">Get Started</a>
+    </nav>
+  </div>
+</header>
+
+<main>
+<!-- Hero Section with Squada One Bold Display Headline -->
+<section class="hero">
+  <div class="wrap">
+    <div class="hero-grid">
+
+      <div class="hero-text">
+        <span class="hero-tag">AI Forensics</span>
+        <h1 class="title">DEEPFAKE AI DETECTION <span>Your Truth Amplified</span></h1>
+        <p class="sub">Instantly detect synthetic video and face manipulation. Analyze clips frame-by-frame with precise calibrated confidence scores.</p>
+      </div>
+
+      <div class="pair-wrapper">
+        <div class="pair">
+          <!-- Drop your own 9:16 clips at site/assets/reel.mp4 and
+               site/assets/real.mp4. Until then the green .ghost panel shows. -->
+          <figure class="slot" style="margin:0">
+            <div class="ghost"><b>reel.mp4</b>synthetic sample</div>
+            <video src="assets/reel.mp4" muted loop playsinline preload="metadata"></video>
+            <figcaption class="slot-tag"><span class="dot f"></span> REEL <em>generated</em></figcaption>
+          </figure>
+
+          <div class="vs-badge">VS</div>
+
+          <figure class="slot" style="margin:0">
+            <div class="ghost"><b>real.mp4</b>authentic sample</div>
+            <video src="assets/real.mp4" muted loop playsinline preload="metadata"></video>
+            <figcaption class="slot-tag"><span class="dot t"></span> REAL <em>original</em></figcaption>
+          </figure>
+        </div>
+        <div class="pair-note">
+          <span>Hover clip to preview (9:16 Reel format)</span>
+          <span>Audience accuracy: 54%</span>
+        </div>
+      </div>
+
+    </div>
+  </div>
+</section>
+
+<section class="statement">
+  <div class="wrap">
+    <p>A fake clip travels faster than a correction ever could. The critical question isn't just if a video is fake — but precisely which seconds were tampered with.</p>
+    <small class="serif">Our system pinpoints synthetic edits and delivers transparent evidence.</small>
+  </div>
+</section>
+
+<section class="upload" id="detect">
+  <div class="wrap">
+    <div class="sec-head">
+      <h2>Check a video</h2>
+      <span>MP4 · MOV · WEBM — up to 200 MB</span>
+    </div>
+
+    <div class="drop" id="drop">
+      <h3>Drop a clip here, or choose from device</h3>
+      <p>Your video is sent over an encrypted connection to our analysis server and deleted as soon as the result is returned. Get results with detailed timeline analysis.</p>
+      <button class="btn" id="pick">Select Video File</button>
+      <!-- The real input is visually hidden and clicked programmatically so we
+           can style the trigger freely without losing keyboard accessibility. -->
+      <input type="file" id="file" accept="video/*" class="sr">
+
+      <div class="samples">
+        <span>Try a sample:</span>
+        <!-- data-fake pins the demo verdict so the two sample outcomes are
+             always reproducible. It maps to detector.js's forceVerdict option. -->
+        <button class="chip" data-sample="ministry_statement_final.mp4" data-fake="1">ministry_statement_final.mp4</button>
+        <button class="chip" data-sample="press_briefing_raw.mp4" data-fake="0">press_briefing_raw.mp4</button>
+        <button class="chip" data-sample="address_reupload_720p.mp4" data-fake="1">address_reupload_720p.mp4</button>
+      </div>
+
+      <div class="limits" id="limits">
+        <span>✓ Face visible 3s+</span>
+        <span>✓ No re-encode needed</span>
+        <span>✓ 100% Private</span>
+      </div>
+    </div>
+
+    <div class="staged glass-panel" id="staged">
+      <div class="staged-row">
+        <div>
+          <div class="name" id="sName">—</div>
+          <div class="meta" id="sMeta">—</div>
+        </div>
+        <div class="grow">
+          <button class="btn ghost" id="clear">Remove</button>
+          <button class="btn" id="run">Analyze Video</button>
+        </div>
+      </div>
+      <div class="bar" id="bar"><i></i></div>
+      <div class="bar-label" id="barLabel">Extracting frames…</div>
+    </div>
+  </div>
+</section>
+
+<section class="report" id="report">
+  <div class="wrap">
+    <div class="sec-head">
+      <h2>Analysis Report</h2>
+      <span id="stamp">—</span>
+    </div>
+
+    <!-- Only shown when a result arrives from the Chrome extension. -->
+    <div class="handoff-note" id="handoffNote"></div>
+
+    <div class="glass-panel">
+      <div class="verdict">
+        <div class="file">
+          <h3 id="rName">—</h3>
+          <p id="rMeta">—</p>
+        </div>
+        <div class="badge" id="rBadge">Likely synthetic</div>
+      </div>
+
+      <div class="stats">
+        <div class="stat"><span>Synthetic score</span><strong id="rScore">0.00</strong></div>
+        <div class="stat"><span>Calibrated band</span><strong id="rBand">—</strong></div>
+        <div class="stat"><span>Manipulated duration</span><strong id="rDur">—</strong></div>
+      </div>
+
+      <div class="viewer">
+        <div class="viewer-video">
+          <div class="ghost" id="vGhost">Preview window</div>
+          <video id="rVideo" controls playsinline></video>
+        </div>
+        <div class="evidence">
+          <h4>Detected Artifacts</h4>
+          <!-- The <b> labels are static copy; app.js only rewrites each <span>
+               with the matching detector artifact (ids e1..e6). -->
+          <div class="ev"><b>Face boundary blending</b><span class="bad" id="e1">Soft seam along jawline</span></div>
+          <div class="ev"><b>Blink rate &amp; frequency</b><span class="flag" id="e2">2 blinks in 24 s — unnatural</span></div>
+          <div class="ev"><b>Temporal flicker</b><span class="bad" id="e3">Texture reset at 12.1 s</span></div>
+          <div class="ev"><b>Compression trace</b><span class="flag" id="e4">Double-encoded region</span></div>
+          <div class="ev"><b>Lip-sync alignment</b><span id="e5">Consistent</span></div>
+          <div class="ev"><b>C2PA Provenance</b><span class="bad" id="e6">Unsigned</span></div>
+        </div>
+      </div>
+
+      <div class="timeline">
+        <h4>Per-second timeline analysis</h4>
+        <p class="hint">Click any bar to jump to that moment in the video playback.</p>
+        <div class="bars" id="bars"></div>
+        <div class="axis"><span>0:00</span><span id="axisMid">—</span><span id="axisEnd">0:24</span></div>
+        <div class="legend">
+          <span><i style="background:var(--true)"></i> Authentic capture</span>
+          <span><i style="background:var(--warn)"></i> Uncertain / Near threshold</span>
+          <span><i style="background:var(--fake)"></i> Synthetic artifacts found</span>
+        </div>
+      </div>
+
+      <div class="caveat">
+        <b>Reading the score:</b> The calibrated band represents a 90% confidence interval. High scores indicate high statistical probability of manipulation. Unsigned media or heavy re-encoding may introduce uncertainty.
+      </div>
+    </div>
+
+    <div class="report-actions">
+      <button class="btn ghost" id="again">Check another video</button>
+      <button class="btn ghost" id="exportPdf">Export PDF Report</button>
+    </div>
+  </div>
+</section>
+
+<!-- Section with Aesthetic Pink Background -->
+<div class="pink-theme-section">
+  <section class="method" id="method">
+    <div class="wrap">
+      <div class="sec-head">
+        <h2>Services &amp; Methodology</h2>
+        <span class="serif">Multi-Signal Detection</span>
+      </div>
+      <div class="method-grid">
+        <div class="cell glass-panel">
+          <h3>Spatial Analysis</h3>
+          <p>Faces are isolated and analyzed by computer vision models looking for unnatural blending seams, texture inconsistencies, and digital artifacts.</p>
+        </div>
+        <div class="cell glass-panel">
+          <h3>Temporal Consistency</h3>
+          <p>Tracks sequence-level details across frames including blinking frequency, lighting drift, and micro-movements between lip motion and speech.</p>
+        </div>
+        <div class="cell glass-panel">
+          <h3>File Provenance</h3>
+          <p>Inspects metadata, encoder footprints, double-compression traits, and cryptographic signatures like C2PA manifest validity.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+</div>
+
+<!-- Section with Dark Forest Green Theme -->
+<div class="dark-theme-section">
+  <section class="method" id="limits">
+    <div class="wrap">
+      <div class="sec-head">
+        <h2>Known Limits</h2>
+        <span class="serif">Full Transparency</span>
+      </div>
+      <div class="method-grid">
+        <div class="cell glass-panel">
+          <h3>Novel Generative Models</h3>
+          <p>Unseen architecture types may lower detection confidence. Unrecognized patterns are treated as unresolved rather than clean.</p>
+        </div>
+        <div class="cell glass-panel">
+          <h3>Heavy Re-compression</h3>
+          <p>Social platform re-uploads erase fine-grained camera noise. Degraded inputs are flagged accordingly.</p>
+        </div>
+        <div class="cell glass-panel">
+          <h3>Micro-Edits</h3>
+          <p>Short edits inside long videos require timeline inspection; always check per-second bars rather than relying solely on global scores.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+</div>
+
+</main>
+
+<footer>
+  <div class="wrap foot-in">
+    <span>REEL/REAL — Deepfake Detection System</span>
+    <span>Aesthetic Forensics Interface</span>
+  </div>
+</footer>
+
+<!-- detector.js defines window.ReelReal and must load before app.js. -->
+<script src="js/detector.js"></script>
+<script src="js/app.js"></script>
+
+<!-- Motion layer, loaded after app.js so the elements it watches already
+     exist. Neither file reads or writes analysis state. -->
+<script src="js/reveal.js"></script>
+<script src="js/enhance.js"></script>
+</body>
+</html>

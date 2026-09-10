@@ -1,0 +1,42 @@
+{
+  "manifest_version": 3,
+
+  "name": "REEL/REAL — Deepfake Detector",
+  "version": "0.1.0",
+  "description": "Check a video for synthetic manipulation without leaving your browser.",
+
+  "action": {
+    "default_popup": "popup.html",
+    "default_title": "REEL/REAL — check a video",
+    "default_icon": {
+      "16": "icons/icon16.png",
+      "48": "icons/icon48.png",
+      "128": "icons/icon128.png"
+    }
+  },
+
+  "background": {
+    "service_worker": "background.js"
+  },
+
+  "permissions": ["storage"],
+
+  "//host_permissions": [
+    "The popup uploads the video to the detection server, which is a different",
+    "origin from the extension, so it needs explicit permission to reach it.",
+    "Only the local dev server is listed. When the backend is deployed, replace",
+    "these two entries with the real https:// origin and nothing else — a wide",
+    "pattern like https://*/* would make Chrome warn users that the extension",
+    "can read data on every site they visit."
+  ],
+  "host_permissions": [
+    "http://127.0.0.1:8000/*",
+    "http://localhost:8000/*"
+  ],
+
+  "icons": {
+    "16": "icons/icon16.png",
+    "48": "icons/icon48.png",
+    "128": "icons/icon128.png"
+  }
+}

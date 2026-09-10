@@ -1,0 +1,121 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>REEL/REAL</title>
+
+<!-- Remote fonts are allowed from an extension page, but they are fetched on
+     every cold popup open. If you want the popup to be fully offline and leak
+     nothing to Google, download these three families into extension/fonts/ and
+     declare them with @font-face in popup.css. The font tokens in tokens.css
+     already list local fallbacks, so the popup degrades gracefully either way. -->
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=Squada+One&display=swap" rel="stylesheet">
+
+<!-- Same shared token file as the website. -->
+<link rel="stylesheet" href="css/tokens.css">
+<link rel="stylesheet" href="popup.css">
+</head>
+<body>
+
+<header class="pop-head">
+  <div class="mark">REEL<span>/</span>REAL</div>
+  <span class="tag">AI Forensics</span>
+</header>
+
+<main class="pop-body">
+
+  <!-- ==================== SCREEN 1: choose a file ==================== -->
+  <section class="screen on" id="screenUpload">
+    <div class="drop" id="drop">
+      <h3>Drop a clip</h3>
+      <p>MP4 · MOV · WEBM — up to 200 MB. Uploaded for analysis, then deleted.</p>
+      <button class="btn btn-sm" id="pick">Select Video</button>
+      <input type="file" id="file" accept="video/*" class="sr">
+    </div>
+
+    <div class="samples">
+      <span class="samples-label">Try a sample</span>
+      <button class="chip" data-sample="ministry_statement_final.mp4" data-fake="1">ministry_statement_final.mp4</button>
+      <button class="chip" data-sample="press_briefing_raw.mp4" data-fake="0">press_briefing_raw.mp4</button>
+    </div>
+
+    <ul class="checks">
+      <li>Face visible 3s+</li>
+      <li>No re-encode needed</li>
+      <li>Not retained</li>
+    </ul>
+  </section>
+
+  <!-- ==================== SCREEN 2: staged + progress ==================== -->
+  <section class="screen" id="screenStaged">
+    <div class="staged-card glass-panel">
+      <div class="file-name" id="sName">—</div>
+      <div class="file-meta" id="sMeta">—</div>
+
+      <div class="bar" id="bar"><i></i></div>
+      <div class="bar-label" id="barLabel">Extracting frames…</div>
+
+      <div class="row-actions">
+        <button class="btn ghost btn-sm" id="clear">Remove</button>
+        <button class="btn btn-sm" id="run">Analyze</button>
+      </div>
+    </div>
+  </section>
+
+  <!-- ==================== SCREEN 3: verdict ==================== -->
+  <section class="screen" id="screenResult">
+    <div class="verdict-card glass-panel">
+      <div class="badge" id="rBadge">Likely synthetic</div>
+      <div class="file-name" id="rName">—</div>
+      <div class="file-meta" id="rMeta">—</div>
+    </div>
+
+    <div class="stat-grid">
+      <div class="stat"><span>Score</span><strong id="rScore">0.00</strong></div>
+      <div class="stat"><span>Band</span><strong id="rBand">—</strong></div>
+      <div class="stat"><span>Manipulated</span><strong id="rDur">—</strong></div>
+    </div>
+
+    <div class="block">
+      <h4>Timeline</h4>
+      <div class="bars" id="bars"></div>
+      <div class="axis"><span>0:00</span><span id="axisMid">—</span><span id="axisEnd">0:24</span></div>
+      <div class="legend">
+        <span><i style="background:var(--true)"></i> Authentic</span>
+        <span><i style="background:var(--warn)"></i> Uncertain</span>
+        <span><i style="background:var(--fake)"></i> Synthetic</span>
+      </div>
+    </div>
+
+    <div class="block">
+      <h4>Detected Artifacts</h4>
+      <!-- Rendered from result.artifacts by popup.js — unlike the website, the
+           popup has no pre-authored copy to preserve, so it builds rows itself. -->
+      <div id="evidence"></div>
+    </div>
+
+    <p class="caveat">
+      Calibrated band is a 90% confidence interval. Heavy re-encoding or unsigned
+      media widens it.
+    </p>
+
+    <button class="btn ghost btn-sm full" id="again">Check another video</button>
+  </section>
+
+</main>
+
+<footer class="pop-foot">
+  <!-- Handoff to the website. popup.js appends the encoded result to this URL. -->
+  <a href="#" id="openSite" class="site-link">Open full report on the website →</a>
+  <span class="ver" id="ver">model v2.4</span>
+</footer>
+
+<!-- Identical load order to the website: shared detector first, UI second.
+     No inline <script> anywhere — Manifest V3's content security policy blocks
+     inline script on extension pages outright. -->
+<script src="js/detector.js"></script>
+<script src="popup.js"></script>
+</body>
+</html>
