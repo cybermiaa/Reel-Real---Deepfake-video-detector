@@ -1,0 +1,30 @@
+# ---------------------------------------------------------------------------
+# Install order matters. On Colab, run:
+#
+#   pip install -r requirements.txt
+#   pip install --no-deps facenet-pytorch==2.6.0
+#
+# Two rules:
+#
+# 1. Do NOT reinstall torch/torchvision on Colab. They are preinstalled and
+#    matched to the driver. The floors below are for local installs only; pip
+#    will leave Colab's versions alone because they already satisfy them.
+#
+# 2. facenet-pytorch MUST be installed with --no-deps. Its dependency block
+#    pins an older torch, and without --no-deps pip will silently downgrade
+#    Colab's torch, which breaks CUDA. That is why it is not listed here.
+# ---------------------------------------------------------------------------
+
+torch>=2.1
+torchvision>=0.16
+
+opencv-python-headless==4.10.0.84
+scikit-learn==1.5.2
+pandas==2.2.2
+numpy>=1.26,<3
+Pillow>=10.0
+matplotlib==3.9.2
+tqdm==4.66.5
+
+# Pinned: gradio 3/4/5 have mutually incompatible APIs and app.py targets 4.x.
+gradio==4.44.1
